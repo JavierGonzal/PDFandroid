@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">PDFandroid</string>
 
+    <string name="add_activity_main">Add</string>
     <string name="generate_activity_main">Generate</string>
     <string name="edit_activity_main">Edit</string>
     <string name="open_old_activity_main">Open old PDF</string>

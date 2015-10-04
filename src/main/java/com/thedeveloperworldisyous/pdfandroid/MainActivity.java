@@ -18,8 +18,12 @@ import android.widget.Toast;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
@@ -37,7 +41,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private static String sOutPutFile = "Android/data/ExampleCopy.pdf";
     private File mPdfFile;
     private File mPdfFileOutPut;
-    private ProgressDialog mProgressDialog;
     private Button mEdit;
     private Button mOpenOld;
     private Button mOpenNew;
@@ -48,7 +51,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
             setContentView(R.layout.activity_main);
 
-            mProgressDialog = new ProgressDialog(this);
             // check if external storage is available so that we can dump our PDF
             // file there
             if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
@@ -64,11 +66,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
             }
 
             Button genterateButton = (Button) findViewById(R.id.button_generate_activity_main);
+            Button addButton = (Button) findViewById(R.id.button_add_activity_main);
             mEdit = (Button) findViewById(R.id.button_edit_activity_main);
             mOpenOld = (Button) findViewById(R.id.button_open_old_activity_main);
             mOpenNew = (Button) findViewById(R.id.button_open_new_activity_main);
 
             genterateButton.setOnClickListener(this);
+            addButton.setOnClickListener(this);
             mEdit.setOnClickListener(this);
             mOpenOld.setOnClickListener(this);
             mOpenNew.setOnClickListener(this);
@@ -78,8 +82,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
         @Override
 
         public void onClick(View v) {
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.show();
 
             switch (v.getId()) {
 
@@ -89,9 +91,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     break;
 
                 case R.id.button_edit_activity_main:
-
+                    stamperPDF("Hoooolaaa");
                     mOpenOld.setEnabled(true);
                     mOpenNew.setEnabled(true);
+                    break;
+
+                case R.id.button_add_activity_main:
+                    drawElementInPDF();
                     break;
 
                 case R.id.button_open_old_activity_main:
@@ -132,7 +138,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         }
 
-        mProgressDialog.cancel();
 
     }
 
@@ -190,14 +195,59 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         }
 
-        mProgressDialog.cancel();
 
+    }
+
+    private void drawElementInPDF() {
+        // create a new document
+        Document document = new Document();
+
+        try {
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(mPdfFileOutPut));
+            document.open();
+            // Measuring a String in Helvetica
+            Font helvetica = new Font(Font.FontFamily.HELVETICA, 12);
+            BaseFont bf_helv = helvetica.getCalculatedBaseFont(false);
+            float width_helv = bf_helv.getWidthPoint("foobar", 12);
+
+            PdfContentByte canvas = writer.getDirectContent();
+            canvas.saveState();
+            canvas.setLineWidth(0.05f);
+            canvas.moveTo(400, 806);
+            canvas.lineTo(400, 626);
+            canvas.moveTo(508.7f, 806);
+            canvas.lineTo(508.7f, 626);
+            canvas.moveTo(280, 788);
+            canvas.lineTo(520, 788);
+            canvas.moveTo(280, 752);
+            canvas.lineTo(520, 752);
+            canvas.moveTo(280, 716);
+            canvas.lineTo(520, 716);
+            canvas.moveTo(280, 680);
+            canvas.lineTo(520, 680);
+            canvas.moveTo(280, 644);
+            canvas.lineTo(520, 644);
+            canvas.stroke();
+            canvas.restoreState();
+
+            Phrase phrase = new Phrase("fasdfasf");
+            ColumnText.showTextAligned(canvas, Element.ALIGN_LEFT, phrase, 400, 572, 0);
+
+            document.add(new Paragraph("hELLO word !!! tt adfafafda adfas"));
+            document.close();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+        openFile(mPdfFileOutPut);
     }
 
     private void generateAndwritePDF() {
 
-// create a new document
-
+        // create a new document
         Document document = new Document();
 
         try {
@@ -206,7 +256,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
             document.add(new Paragraph("hELLO word !!! tt adfafafda adfas"));
             document.close();
 
-            mProgressDialog.cancel();
 
         } catch (Exception e) {
             e.printStackTrace();
